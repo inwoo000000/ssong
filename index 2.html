@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>웹 시</title>
+  <style>
+    @import url('//fonts.googleapis.com/earlyaccess/nanummyeongjo.css');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #242424;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: left;
+    }
+
+    .text-container {
+      max-width: 600px;
+      padding: 20px;
+    }
+
+    h1 {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 12pt;
+      font-weight: 400;
+      line-height: 2.5;
+      position: absolute;
+      top: 90px;
+      left: 240px;
+    }
+
+    button {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background-color: #767676;
+      cursor: pointer;
+    }
+
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .clickable {
+      cursor: pointer;
+      color: #242424;
+    }
+
+    .clickable:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="text-container">
+    <h1 id="poem"></h1>
+  </div>
+  <button id="reveal-button"></button>
+
+  <script>
+    const poemElement = document.getElementById('poem');
+    const button = document.getElementById('reveal-button');
+
+    // 텍스트를 줄 단위로 분리
+    const poemText = [
+      "며칠",
+      "머리도 아파서,",
+      "작업도 못하고",
+      "집에서 누워만 있었어…",
+      "나가보려 했는데",
+      "잘안되더라고.",
+      "",
+      "사랑이 그렇지,",
+      "감기 얘기하는건데?"
+    ];
+
+    // 단어별 대체 단어 배열
+    const replacementWords = {
+      "사랑이": ["감기가", "사랑이"],
+      "감기": ["사랑", "감기"]
+    };
+
+    let index = 0;
+
+    // 줄 추가 버튼 클릭 이벤트
+    button.addEventListener('click', () => {
+      if (index < poemText.length) {
+        if (poemText[index] === "") {
+          // 빈 문자열일 경우 줄바꿈 추가
+          poemElement.appendChild(document.createElement('br'));
+        } else {
+          const line = document.createElement('div');
+          const words = poemText[index].split(" ");
+
+          words.forEach(word => {
+            const wordSpan = document.createElement('span');
+            wordSpan.textContent = word;
+            wordSpan.classList.add('fade-in'); // 애니메이션 클래스 추가
+
+            if (replacementWords[word]) {
+              wordSpan.classList.add('clickable');
+              let cycleIndex = 0;
+              wordSpan.addEventListener('click', () => {
+                cycleIndex = (cycleIndex + 1) % replacementWords[word].length;
+                wordSpan.textContent = replacementWords[word][cycleIndex];
+                wordSpan.classList.remove('fade-in'); // 애니메이션 초기화
+                void wordSpan.offsetWidth; // 리플로우 강제하여 애니메이션 재적용
+                wordSpan.classList.add('fade-in');
+              });
+            }
+
+            line.appendChild(wordSpan);
+            line.appendChild(document.createTextNode(" "));
+          });
+
+          poemElement.appendChild(line);
+        }
+        index++;
+      }
+    });
+  </script>
+</body>
+</html>
